@@ -161,7 +161,7 @@ class MyApp extends StatelessWidget {
                 useMaterial3: false,
               ),
               initialRoute: AppRoutes.splashScreen,
-              navigatorObservers: [ChuckerFlutter.navigatorObserver],
+              // navigatorObservers: [ChuckerFlutter.navigatorObserver],
               onGenerateRoute: AppRoutes.generateRoute,
             ),
           );

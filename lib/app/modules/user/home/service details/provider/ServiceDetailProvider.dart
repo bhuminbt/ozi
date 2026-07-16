@@ -69,7 +69,10 @@ class ServiceDetailProvider extends ChangeNotifier {
     super.dispose();
   }
 
-  ServiceDetailProvider(this.service, this.categoryId) {
+  final String? latitude;
+  final String? longitude;
+
+  ServiceDetailProvider(this.service, this.categoryId, {this.latitude, this.longitude}) {
     _fetchServiceDetails();
     fetchCartItems();
   }
@@ -178,6 +181,8 @@ class ServiceDetailProvider extends ChangeNotifier {
       final response = await _repository.serviceDetailsApi(
         categoryId,
         service.id!,
+        latitude: latitude,
+        longitude: longitude,
       );
 
       dev.log('API Response - Status: ${response.status}');

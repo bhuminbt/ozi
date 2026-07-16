@@ -19,28 +19,31 @@ class NoDataFoundWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Lottie.asset(
-            lottieAsset ?? ImageConstants.noData,
-            height: lottieHeight ?? 180.h,
-            fit: BoxFit.contain,
-          ),
-          SizedBox(height: 16.h),
-          Text(
-            message ?? "No Services Available",
-            style:
-                textStyle ??
-                TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Lottie.asset(
+          lottieAsset ?? ImageConstants.noData,
+          height: lottieHeight ?? 180.h,
+          fit: BoxFit.contain,
+        ),
+        SizedBox(height: 16.h),
+        Text(
+          message ?? "No Services Available",
+          style:
+              textStyle ??
+              TextStyle(
+                fontSize: 16.sp,
+                color: Colors.grey,
+                fontWeight: FontWeight.w500,
+              ),
+          textAlign: TextAlign.center,
+        ),
+
+        SizedBox(height: 90.h),
+      ],
     );
   }
 }

@@ -6,6 +6,7 @@ import '../../../../../core/appExports/app_export.dart';
 import '../../../../../core/constants/app_urls.dart';
 import '../../../../../shared/widgets/auth_guard.dart';
 import '../../../../../shared/widgets/custom_app_bar.dart';
+import 'package:ozi/app/modules/user/profile/save address/provider/saved_address_provider.dart';
 import '../provider/ServiceDetailProvider.dart';
 import '../model/ServiceDetailsModel.dart';
 import 'vendordetailscreen.dart';
@@ -23,9 +24,33 @@ class ServiceDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ServiceDetailProvider(service, categoryId),
-      child: ServiceDetailView(service: service, categoryId: categoryId),
+    return Consumer<SavedAddressProvider>(
+      builder: (context, addressProvider, child) {
+        String? latStr;
+        String? lngStr;
+
+        final selectedAddr = addressProvider.selectedAddress;
+        if (selectedAddr != null &&
+            selectedAddr.latitude != null &&
+            selectedAddr.longitude != null) {
+          latStr = selectedAddr.latitude;
+          lngStr = selectedAddr.longitude;
+        } else if (addressProvider.currentLat != null &&
+            addressProvider.currentLng != null) {
+          latStr = addressProvider.currentLat.toString();
+          lngStr = addressProvider.currentLng.toString();
+        }
+
+        return ChangeNotifierProvider(
+          create: (_) => ServiceDetailProvider(
+            service,
+            categoryId,
+            latitude: latStr,
+            longitude: lngStr,
+          ),
+          child: ServiceDetailView(service: service, categoryId: categoryId),
+        );
+      },
     );
   }
 }
@@ -71,7 +96,10 @@ class ServiceDetailView extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(BuildContext parentContext, ServiceDetailProvider provider) {
+  Widget _buildBody(
+    BuildContext parentContext,
+    ServiceDetailProvider provider,
+  ) {
     if (provider.isLoading) {
       return Center(child: CircularProgressIndicator(color: AppColors.primary));
     }
@@ -109,7 +137,10 @@ class ServiceDetailView extends StatelessWidget {
     }
 
     if (provider.serviceProviders.isEmpty) {
-      return NoDataFoundWidget();
+      return NoDataFoundWidget(
+        message:
+            "We currently do not have any service providers available in your area.",
+      );
     }
 
     return RefreshIndicator(

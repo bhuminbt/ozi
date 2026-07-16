@@ -9,30 +9,40 @@ class vendorDetailModel {
     if (json is Map<String, dynamic>) {
       status = json['status'];
       message = json['message'];
+
       if (json['data'] != null) {
-        data = <Data>[];
-        if (json['data'] is List) {
-          json['data'].forEach((v) {
-            data!.add(Data.fromJson(v));
-          });
+        data = [];
+        for (var item in json['data']) {
+          data!.add(Data.fromJson(item));
         }
       }
     } else if (json is List) {
       status = true;
       message = "Success";
-      data = json.map((v) => Data.fromJson(v)).toList();
+      data = json.map<Data>((e) => Data.fromJson(e)).toList();
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['status'] = status;
-    data['message'] = message;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
-    return data;
+    return {
+      'status': status,
+      'message': message,
+      'data': data?.map((e) => e.toJson()).toList(),
+    };
   }
+}
+
+int? parseInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  return int.tryParse(value.toString());
+}
+
+double? parseDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  return double.tryParse(value.toString());
 }
 
 class Data {
@@ -45,15 +55,15 @@ class Data {
   String? description;
   dynamic latitude;
   dynamic longitude;
-  dynamic servicePrice;
-  dynamic durationValue;
+  double? servicePrice;
+  int? durationValue;
   String? durationType;
   String? status;
-  dynamic quantity;
+  int? quantity;
   String? createdAt;
   String? updatedAt;
   dynamic deletedAt;
-  dynamic averageRating;
+  double? averageRating;
   Category? category;
   Category? subcategory;
   Vendor? vendor;
@@ -83,71 +93,68 @@ class Data {
   });
 
   Data.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    vendorId = json['vendor_id'];
-    serviceName = json['service_name'];
-    serviceImage = json['service_image'];
-    categoryId = json['category_id'];
-    subcategoryId = json['subcategory_id'];
-    description = json['description'];
+    id = parseInt(json['id']);
+    vendorId = parseInt(json['vendor_id']);
+    categoryId = parseInt(json['category_id']);
+    subcategoryId = parseInt(json['subcategory_id']);
+
+    serviceName = json['service_name']?.toString();
+    serviceImage = json['service_image']?.toString();
+    description = json['description']?.toString();
+
     latitude = json['latitude'];
     longitude = json['longitude'];
-    servicePrice =
-        num.tryParse(json['service_price']?.toString() ?? '')?.toDouble() ??
-        json['service_price'];
-    durationValue =
-        num.tryParse(json['duration_value']?.toString() ?? '')?.toInt() ??
-        json['duration_value'];
-    durationType = json['duration_type'];
-    status = json['status'];
-    quantity =
-        num.tryParse(json['quantity']?.toString() ?? '')?.toInt() ??
-        json['quantity'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
+
+    servicePrice = parseDouble(json['service_price']);
+    durationValue = parseInt(json['duration_value']);
+
+    durationType = json['duration_type']?.toString();
+    status = json['status']?.toString();
+
+    quantity = parseInt(json['quantity']);
+
+    createdAt = json['created_at']?.toString();
+    updatedAt = json['updated_at']?.toString();
+
     deletedAt = json['deleted_at'];
-    averageRating =
-        num.tryParse(json['average_rating']?.toString() ?? '')?.toDouble() ??
-        json['average_rating'];
+
+    averageRating = parseDouble(json['average_rating']);
+
     category = json['category'] != null
         ? Category.fromJson(json['category'])
         : null;
+
     subcategory = json['subcategory'] != null
         ? Category.fromJson(json['subcategory'])
         : null;
-    vendor = json['vendor'] != null
-        ? Vendor.fromJson(json['vendor'])
-        : null;
+
+    vendor = json['vendor'] != null ? Vendor.fromJson(json['vendor']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['vendor_id'] = vendorId;
-    data['service_name'] = serviceName;
-    data['service_image'] = serviceImage;
-    data['category_id'] = categoryId;
-    data['subcategory_id'] = subcategoryId;
-    data['description'] = description;
-    data['latitude'] = latitude;
-    data['longitude'] = longitude;
-    data['service_price'] = servicePrice;
-    data['duration_value'] = durationValue;
-    data['duration_type'] = durationType;
-    data['status'] = status;
-    data['created_at'] = createdAt;
-    data['updated_at'] = updatedAt;
-    data['deleted_at'] = deletedAt;
-    if (category != null) {
-      data['category'] = category!.toJson();
-    }
-    if (subcategory != null) {
-      data['subcategory'] = subcategory!.toJson();
-    }
-    if (vendor != null) {
-      data['vendor'] = vendor!.toJson();
-    }
-    return data;
+    return {
+      'id': id,
+      'vendor_id': vendorId,
+      'service_name': serviceName,
+      'service_image': serviceImage,
+      'category_id': categoryId,
+      'subcategory_id': subcategoryId,
+      'description': description,
+      'latitude': latitude,
+      'longitude': longitude,
+      'service_price': servicePrice,
+      'duration_value': durationValue,
+      'duration_type': durationType,
+      'status': status,
+      'quantity': quantity,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'deleted_at': deletedAt,
+      'average_rating': averageRating,
+      'category': category?.toJson(),
+      'subcategory': subcategory?.toJson(),
+      'vendor': vendor?.toJson(),
+    };
   }
 }
 
@@ -160,25 +167,14 @@ class Category {
 
   Category.fromJson(dynamic json) {
     if (json is Map<String, dynamic>) {
-      id = json['id'];
-      categoryName = json['category_name'];
-      parentName = json['parent_name'];
-    } else if (json is List && json.isNotEmpty) {
-      final first = json.first;
-      if (first is Map<String, dynamic>) {
-        id = first['id'];
-        categoryName = first['category_name'];
-        parentName = first['parent_name'];
-      }
+      id = parseInt(json['id']);
+      categoryName = json['category_name']?.toString();
+      parentName = json['parent_name']?.toString();
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['category_name'] = categoryName;
-    data['parent_name'] = parentName;
-    return data;
+    return {'id': id, 'category_name': categoryName, 'parent_name': parentName};
   }
 }
 
@@ -187,60 +183,42 @@ class Vendor {
   String? firstName;
   String? lastName;
   String? proImg;
-  dynamic receivedReviewsAvgRating;
-  dynamic received_reviews_count;
+  double? receivedReviewsAvgRating;
+  int? receivedReviewsCount;
+
   Vendor({
     this.id,
     this.firstName,
     this.lastName,
     this.proImg,
     this.receivedReviewsAvgRating,
-    this.received_reviews_count,
+    this.receivedReviewsCount,
   });
 
   Vendor.fromJson(dynamic json) {
     if (json is Map<String, dynamic>) {
-      id = json['id'];
-      firstName = json['first_name'];
-      lastName = json['last_name'];
-      proImg = json['pro_img'];
-      receivedReviewsAvgRating =
-          num.tryParse(
-            json['received_reviews_avg_rating']?.toString() ?? '',
-          )?.toDouble() ??
-          json['received_reviews_avg_rating'];
-      received_reviews_count =
-          num.tryParse(
-            json['received_reviews_count']?.toString() ?? '',
-          )?.toInt() ??
-          json['received_reviews_count'];
-    } else if (json is List && json.isNotEmpty) {
-      final first = json.first;
-      if (first is Map<String, dynamic>) {
-        id = first['id'];
-        firstName = first['first_name'];
-        lastName = first['last_name'];
-        proImg = first['pro_img'];
-        receivedReviewsAvgRating =
-            num.tryParse(
-              first['received_reviews_avg_rating']?.toString() ?? '',
-            )?.toDouble() ??
-            first['received_reviews_avg_rating'];
-        received_reviews_count =
-            num.tryParse(
-              first['received_reviews_count']?.toString() ?? '',
-            )?.toInt() ??
-            first['received_reviews_count'];
-      }
+      id = parseInt(json['id']);
+
+      firstName = json['first_name']?.toString();
+      lastName = json['last_name']?.toString();
+      proImg = json['pro_img']?.toString();
+
+      receivedReviewsAvgRating = parseDouble(
+        json['received_reviews_avg_rating'],
+      );
+
+      receivedReviewsCount = parseInt(json['received_reviews_count']);
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['id'] = id;
-    data['first_name'] = firstName;
-    data['last_name'] = lastName;
-    data['pro_img'] = proImg;
-    return data;
+    return {
+      'id': id,
+      'first_name': firstName,
+      'last_name': lastName,
+      'pro_img': proImg,
+      'received_reviews_avg_rating': receivedReviewsAvgRating,
+      'received_reviews_count': receivedReviewsCount,
+    };
   }
 }

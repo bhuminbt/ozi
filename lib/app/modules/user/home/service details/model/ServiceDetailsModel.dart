@@ -11,9 +11,13 @@ class ServiceDetailsModel {
     message = json['message'];
     if (json['data'] != null) {
       data = <ServiceData>[];
-      json['data'].forEach((v) {
-        data!.add(ServiceData.fromJson(v));
-      });
+      if (json['data'] is List) {
+        json['data'].forEach((v) {
+          data!.add(ServiceData.fromJson(v));
+        });
+      } else if (json['data'] is Map<String, dynamic>) {
+        data!.add(ServiceData.fromJson(json['data']));
+      }
     }
     pagination = json['pagination'] != null
         ? Pagination.fromJson(json['pagination'])
@@ -84,35 +88,27 @@ class ServiceData {
   });
 
   ServiceData.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    vendorId = json['vendor_id'];
+    id = json['id'] != null ? int.tryParse(json['id'].toString()) : null;
+    vendorId = json['vendor_id'] != null ? int.tryParse(json['vendor_id'].toString()) : null;
     serviceName = json['service_name'];
     serviceImage = json['service_image'];
-    categoryId = json['category_id'];
-    subcategoryId = json['subcategory_id'];
+    categoryId = json['category_id'] != null ? int.tryParse(json['category_id'].toString()) : null;
+    subcategoryId = json['subcategory_id'] != null ? int.tryParse(json['subcategory_id'].toString()) : null;
     description = json['description'];
     latitude = json['latitude'];
     longitude = json['longitude'];
-    servicePrice =
-        num.tryParse(json['service_price']?.toString() ?? '')?.toDouble() ??
-        json['service_price'];
-    durationValue =
-        num.tryParse(json['duration_value']?.toString() ?? '')?.toInt() ??
-        json['duration_value'];
+    servicePrice = json['service_price'] != null ? num.tryParse(json['service_price'].toString())?.toDouble() : null;
+    durationValue = json['duration_value'] != null ? num.tryParse(json['duration_value'].toString())?.toInt() : null;
     durationType = json['duration_type'];
     status = json['status'];
-    quantity =
-        num.tryParse(json['quantity']?.toString() ?? '')?.toInt() ??
-        json['quantity'];
+    quantity = json['quantity'] != null ? num.tryParse(json['quantity'].toString())?.toInt() : null;
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     deletedAt = json['deleted_at'];
-    reviewsCount =
-        num.tryParse(json['reviews_count']?.toString() ?? '')?.toInt() ??
-        json['reviews_count'];
-    ratings =
-        num.tryParse(json['average_rating']?.toString() ?? '')?.toDouble() ??
-        json['ratings'];
+    reviewsCount = json['reviews_count'] != null ? num.tryParse(json['reviews_count'].toString())?.toInt() : null;
+    ratings = json['average_rating'] != null 
+        ? num.tryParse(json['average_rating'].toString())?.toDouble() 
+        : (json['ratings'] != null ? num.tryParse(json['ratings'].toString())?.toDouble() : null);
     category = json['category'] != null
         ? Category.fromJson(json['category'])
         : null;
@@ -159,14 +155,14 @@ class ServiceData {
 class Category {
   int? id;
   String? categoryName;
-  Null parentName;
+  String? parentName;
 
   Category({this.id, this.categoryName, this.parentName});
 
   Category.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] != null ? int.tryParse(json['id'].toString()) : null;
     categoryName = json['category_name'];
-    parentName = json['parent_name'];
+    parentName = json['parent_name']?.toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -186,7 +182,7 @@ class Vendor {
   Vendor({this.id, this.firstName, this.lastName, this.profileImage});
 
   Vendor.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] != null ? int.tryParse(json['id'].toString()) : null;
     firstName = json['first_name'];
     lastName = json['last_name'];
     profileImage = json['pro_img'];
@@ -218,10 +214,10 @@ class Pagination {
   });
 
   Pagination.fromJson(Map<String, dynamic> json) {
-    currentPage = json['current_page'];
-    perPage = json['per_page'];
-    total = json['total'];
-    lastPage = json['last_page'];
+    currentPage = json['current_page'] != null ? int.tryParse(json['current_page'].toString()) : null;
+    perPage = json['per_page'] != null ? int.tryParse(json['per_page'].toString()) : null;
+    total = json['total'] != null ? int.tryParse(json['total'].toString()) : null;
+    lastPage = json['last_page'] != null ? int.tryParse(json['last_page'].toString()) : null;
     hasMore = json['has_more'];
   }
 

@@ -1,9 +1,9 @@
 class AppUrls {
   static const String baseUrl = "https://nbturls.in/oziservice/api";
   static const String imageBaseUrl = "https://nbturls.in/oziservice/public/";
- static const String baseUrlSocket = "http://13.126.91.229:8001/";
- //     static const String baseUrlSocket =
- //         "https://bn6b6jd8-8001.inc1.devtunnels.ms/";
+  static const String baseUrlSocket = "http://3.109.130.74:8001/";
+  //     static const String baseUrlSocket =
+  //         "https://bn6b6jd8-8001.inc1.devtunnels.ms/";
   static const String guestUser = "$baseUrl/guest-login";
 
   static const String googlePlaceKey =

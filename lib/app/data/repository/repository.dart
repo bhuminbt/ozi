@@ -135,11 +135,17 @@ class Repository {
   // *********************************** ServiceDetails Api ***************************************//
   Future<ServiceDetailsModel> serviceDetailsApi(
     int categoryId,
-    int subcategoryId,
-  ) async {
+    int subcategoryId, {
+    String? latitude,
+    String? longitude,
+  }) async {
     try {
-      final url =
+      String url =
           '${AppUrls.getServiceDetailsApi}?category_id=$categoryId&subcategory_id=$subcategoryId';
+
+      if (latitude != null && longitude != null) {
+        url += '&latitude=$latitude&longitude=$longitude';
+      }
 
       dev.log('Service Details API URL: $url');
 

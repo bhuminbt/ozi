@@ -31,10 +31,10 @@ class Data {
   int? id;
   String? categoryName;
   String? icon;
-  Null parentId;
+  int? parentId;
   String? slug;
   String? status;
-  Null deletedAt;
+  String? deletedAt;
   String? createdAt;
   String? updatedAt;
   List<Subcategories>? subcategories;
@@ -52,13 +52,13 @@ class Data {
         this.subcategories});
 
   Data.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] != null ? int.tryParse(json['id'].toString()) : null;
     categoryName = json['category_name'];
     icon = json['icon'];
-    parentId = json['parent_id'];
+    parentId = json['parent_id'] != null ? int.tryParse(json['parent_id'].toString()) : null;
     slug = json['slug'];
     status = json['status'];
-    deletedAt = json['deleted_at'];
+    deletedAt = json['deleted_at']?.toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     if (json['subcategories'] != null) {
@@ -95,7 +95,7 @@ class Subcategories {
   int? parentId;
   String? slug;
   String? status;
-  Null deletedAt;
+  String? deletedAt;
   String? createdAt;
   String? updatedAt;
 
@@ -111,13 +111,13 @@ class Subcategories {
         this.updatedAt});
 
   Subcategories.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id'] != null ? int.tryParse(json['id'].toString()) : null;
     categoryName = json['category_name'];
     icon = json['icon'];
-    parentId = json['parent_id'];
+    parentId = json['parent_id'] != null ? int.tryParse(json['parent_id'].toString()) : null;
     slug = json['slug'];
     status = json['status'];
-    deletedAt = json['deleted_at'];
+    deletedAt = json['deleted_at']?.toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }

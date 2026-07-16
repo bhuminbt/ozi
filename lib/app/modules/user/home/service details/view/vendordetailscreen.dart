@@ -205,7 +205,7 @@ class VendorDetailView extends StatelessWidget {
                     Icon(Icons.star, size: 18.w, color: AppColors.orange),
                     wBox(4.w),
                     Text(
-                      vendor?.received_reviews_count?.toString() ?? '',
+                      vendor?.receivedReviewsCount?.toString() ?? '',
                       style: AppFontStyle.text_14_600(
                         AppColors.black,
                         fontFamily: AppFontFamily.bold,
@@ -230,7 +230,7 @@ class VendorDetailView extends StatelessWidget {
                         );
                       },
                       child: Text(
-                        "${vendor?.received_reviews_count ?? 0} Reviews",
+                        "${vendor?.receivedReviewsCount ?? 0} Reviews",
                         style:
                             AppFontStyle.text_14_400(
                               AppColors.primary,

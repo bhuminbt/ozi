@@ -43,17 +43,21 @@ class BookServiceModel {
 }
 
 class VendorAvailability {
-  // Map key = day of week, value = list of slots
   Map<String, List<DaySlot>>? days;
 
   VendorAvailability({this.days});
 
   VendorAvailability.fromJson(dynamic json) {
     days = {};
+
     if (json is Map) {
       json.forEach((key, value) {
         if (value is List) {
-          days![key] = value.map((e) => DaySlot.fromJson(e)).toList();
+          days![key.toString()] = value
+              .map<DaySlot>(
+                (e) => DaySlot.fromJson(Map<String, dynamic>.from(e)),
+              )
+              .toList();
         }
       });
     }
@@ -61,12 +65,39 @@ class VendorAvailability {
 
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
+
     days?.forEach((key, value) {
       data[key] = value.map((e) => e.toJson()).toList();
     });
+
     return data;
   }
 }
+// class VendorAvailability {
+//   // Map key = day of week, value = list of slots
+//   Map<String, List<DaySlot>>? days;
+
+//   VendorAvailability({this.days});
+
+//   VendorAvailability.fromJson(dynamic json) {
+//     days = {};
+//     if (json is Map) {
+//       json.forEach((key, value) {
+//         if (value is List) {
+//           days![key] = value.map((e) => DaySlot.fromJson(e)).toList();
+//         }
+//       });
+//     }
+//   }
+
+//   Map<String, dynamic> toJson() {
+//     final data = <String, dynamic>{};
+//     days?.forEach((key, value) {
+//       data[key] = value.map((e) => e.toJson()).toList();
+//     });
+//     return data;
+//   }
+// }
 
 class DaySlot {
   String? from;

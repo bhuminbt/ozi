@@ -76,7 +76,7 @@ class CartItem {
   });
 
   CartItem.fromJson(Map<String, dynamic> json) {
-    cartId = json['cart_id'];
+    cartId = json['cart_id'] != null ? int.tryParse(json['cart_id'].toString()) : null;
     serviceId = json['service_id']?.toString();
     serviceName = json['service_name']?.toString();
     serviceImage = json['service_image']?.toString();
@@ -84,7 +84,7 @@ class CartItem {
       json['service_price']?.toString() ?? "0",
     )?.toDouble();
     activeStatus = json['status']?.toString();
-    quantity = json['quantity'];
+    quantity = json['quantity'] != null ? int.tryParse(json['quantity'].toString()) : null;
     serviceItemTotal = num.tryParse(
       json['service_item_total']?.toString() ?? "0",
     )?.toDouble();
