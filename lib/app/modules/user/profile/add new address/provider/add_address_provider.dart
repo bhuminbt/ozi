@@ -13,7 +13,7 @@ class AddAddressProvider extends ChangeNotifier {
   bool _isFetchingAddress = false;
 
   static const Map<String, Map<String, dynamic>> countryPhoneConfig = {
-    '1': {'length': 10, 'name': 'USA/Canada'},
+    '1': {'length': 10, 'name': 'USA'},
     '7': {'length': 10, 'name': 'Russia'},
     '20': {'length': 10, 'name': 'Egypt'},
     '27': {'length': 9, 'name': 'South Africa'},
@@ -132,8 +132,10 @@ class AddAddressProvider extends ChangeNotifier {
     }
 
     // Strip redundant country code if present in the mobile number
-    String currentMobile =
-        receiverMobileController.text.trim().replaceAll(RegExp(r'\D'), '');
+    String currentMobile = receiverMobileController.text.trim().replaceAll(
+      RegExp(r'\D'),
+      '',
+    );
     String phoneCode = country.phoneCode;
     int expectedLength = getExpectedPhoneLength(phoneCode);
 

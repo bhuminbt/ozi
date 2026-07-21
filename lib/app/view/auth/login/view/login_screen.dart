@@ -22,8 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedCountry = Country.parse('IN'); // Set default immediately
-    _loadInitialCountry();
+    _selectedCountry = Country.parse('US'); // Set default immediately
     _updateMaxPhoneLength();
   }
 
@@ -175,232 +174,280 @@ class _LoginScreenState extends State<LoginScreen> {
         builder: (context, loginProvider, child) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Welcome Back!",
-                    style: AppFontStyle.text_30_600(
-                      AppColors.darkText,
-                      fontFamily: AppFontFamily.extraBold,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
                     ),
-                  ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Welcome Back!",
+                            style: AppFontStyle.text_30_600(
+                              AppColors.darkText,
+                              fontFamily: AppFontFamily.extraBold,
+                            ),
+                          ),
 
-                  hBox(10),
+                          hBox(10),
 
-                  Text(
-                    maxLines: 2,
-                    "Please enter your mobile number to proceed.",
-                    style: AppFontStyle.text_16_400(
-                      AppColors.grey,
-                      fontFamily: AppFontFamily.regular,
-                    ),
-                  ),
+                          Text(
+                            maxLines: 2,
+                            "Please enter your mobile number to proceed.",
+                            style: AppFontStyle.text_16_400(
+                              AppColors.grey,
+                              fontFamily: AppFontFamily.regular,
+                            ),
+                          ),
 
-                  hBox(30),
+                          hBox(30),
 
-                  Text(
-                    "Phone Number",
-                    style: AppFontStyle.text_16_600(
-                      AppColors.darkText,
-                      fontFamily: AppFontFamily.semiBold,
-                    ),
-                  ),
+                          Text(
+                            "Phone Number",
+                            style: AppFontStyle.text_16_600(
+                              AppColors.darkText,
+                              fontFamily: AppFontFamily.semiBold,
+                            ),
+                          ),
 
-                  hBox(12),
+                          hBox(12),
 
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: AppColors.lightGrey,
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: loginProvider.isLoading
-                              ? null
-                              : () {
-                                  showCountryPicker(
-                                    context: context,
-                                    showPhoneCode: true,
-                                    onSelect: (Country country) {
-                                      setState(() {
-                                        _selectedCountry = country;
-                                        // _phoneController.clear();
-                                        _updateMaxPhoneLength();
-                                      });
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: AppColors.lightGrey,
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+                            child: Row(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      "+1",
+                                      style: AppFontStyle.text_16_600(
+                                        AppColors.darkText,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                wBox(14),
+
+                                Expanded(
+                                  child: TextField(
+                                    controller: _phoneController,
+                                    keyboardType: TextInputType.phone,
+                                    enabled: !loginProvider.isLoading,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter
+                                          .digitsOnly, // Only digits
+                                      LengthLimitingTextInputFormatter(
+                                        _maxPhoneLength,
+                                      ), // Limit length
+                                    ],
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText:
+                                          "Phone Number ($_maxPhoneLength digits)",
+                                      hintStyle: AppFontStyle.text_16_400(
+                                        AppColors.grey,
+                                      ),
+                                      counterText: "", // Hide default counter
+                                    ),
+                                    style: AppFontStyle.text_16_400(
+                                      AppColors.darkText,
+                                    ),
+                                    onChanged: (value) {
+                                      // Optional: Show real-time validation
+                                      if (value.length == _maxPhoneLength) {
+                                        // Valid length reached
+                                        if (kDebugMode) {
+                                          print('✅ Valid phone number length');
+                                        }
+                                      }
                                     },
-                                  );
-                                },
-                          child: Row(
+                                  ),
+                                ),
+
+                                // Show digit counter
+                                if (_phoneController.text.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8),
+                                    // child: Text(
+                                    //   "${_phoneController.text.length}/$_maxPhoneLength",
+                                    //   style: AppFontStyle.text_12_400(
+                                    //     _phoneController.text.length == _maxPhoneLength
+                                    //         ? Colors.green
+                                    //         : AppColors.grey,
+                                    //   ),
+                                    // ),
+                                  ),
+                              ],
+                            ),
+                          ),
+
+                          hBox(8),
+
+                          // Helper text showing expected format
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              "Enter exactly 10 digits for United States",
+                              style: AppFontStyle.text_12_400(
+                                AppColors.grey,
+                                fontFamily: AppFontFamily.regular,
+                              ),
+                            ),
+                          ),
+
+                          hBox(16),
+
+                          CustomButton(
+                            text: "Continue",
+                            isLoading: loginProvider.isLoading,
+                            onPressed: _handleContinue,
+                          ),
+
+                          hBox(35),
+
+                          Row(
                             children: [
-                              Text(
-                                "+${_selectedCountry?.phoneCode}",
-                                style: AppFontStyle.text_16_600(
-                                  AppColors.darkText,
+                              Expanded(
+                                child: Divider(
+                                  color: AppColors.lightGrey2.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                  thickness: 1,
                                 ),
                               ),
-                              const Icon(Icons.keyboard_arrow_down, size: 20),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                child: Text(
+                                  "Or continue with",
+                                  style: AppFontStyle.text_14_400(
+                                    AppColors.grey,
+                                    fontFamily: AppFontFamily.regular,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Divider(
+                                  color: AppColors.lightGrey2.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                  thickness: 1,
+                                ),
+                              ),
                             ],
                           ),
-                        ),
 
-                        wBox(14),
+                          hBox(35),
 
-                        Expanded(
-                          child: TextField(
-                            controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            enabled: !loginProvider.isLoading,
-                            inputFormatters: [
-                              FilteringTextInputFormatter
-                                  .digitsOnly, // Only digits
-                              LengthLimitingTextInputFormatter(
-                                _maxPhoneLength,
-                              ), // Limit length
-                            ],
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText:
-                                  "Phone Number ($_maxPhoneLength digits)",
-                              hintStyle: AppFontStyle.text_16_400(
-                                AppColors.grey,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _socialButton(
+                                imagePath: "assets/images/Google.png",
+                                onTap: () {
+                                  if (kDebugMode) {
+                                    print("click on google");
+                                  }
+                                  loginProvider.signInWithGoogle(context);
+                                },
                               ),
-                              counterText: "", // Hide default counter
+                              wBox(20),
+                              _socialButton(
+                                imagePath: "assets/images/gg--facebook 1.png",
+                                onTap: () {
+                                  // Handle Facebook login
+                                },
+                              ),
+                            ],
+                          ),
+
+                          // Align(
+                          //   alignment: Alignment.centerRight,
+                          //   child: InkWell(
+                          //     onTap: loginProvider.guestLoading ? null : () async {
+                          //       FocusScope.of(context).unfocus();
+                          //       await loginProvider.guestLogin(); // Call Guest API first
+
+                          //       Navigator.pushReplacement(
+                          //         navigatorKey.currentContext!,
+                          //         MaterialPageRoute(
+                          //           builder: (_) => NavigationTabScreen(),
+                          //         ),
+                          //       );
+                          //     },
+                          //     borderRadius: BorderRadius.circular(20),
+                          //     child: Container(
+                          //       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          //       decoration: BoxDecoration(
+                          //         color: AppColors.primary.withValues(alpha: 0.1),
+                          //         borderRadius: BorderRadius.circular(20),
+                          //         border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                          //       ),
+                          //       child: Row(
+                          //         mainAxisSize: MainAxisSize.min,
+                          //         children: [
+                          //           loginProvider.guestLoading
+                          //               ? SizedBox(
+                          //                   height: 16,
+                          //                   width: 16,
+                          //                   child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary)
+                          //                 )
+                          //               : Text(
+                          //                   "Skip",
+                          //                   style: AppFontStyle.text_14_600(
+                          //                     AppColors.primary,
+                          //                     fontFamily: AppFontFamily.semiBold,
+                          //                   ),
+                          //                 ),
+                          //           if (!loginProvider.guestLoading) ...[
+                          //             const SizedBox(width: 4),
+                          //             Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.primary),
+                          //           ],
+                          //         ],
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                          const Spacer(),
+                          CustomButton(
+                            text: "Skip",
+                            textStyle: AppFontStyle.text_14_600(
+                              AppColors.black,
+                              fontFamily: AppFontFamily.semiBold,
                             ),
-                            style: AppFontStyle.text_16_400(AppColors.darkText),
-                            onChanged: (value) {
-                              // Optional: Show real-time validation
-                              if (value.length == _maxPhoneLength) {
-                                // Valid length reached
-                                if (kDebugMode) {
-                                  print('✅ Valid phone number length');
-                                }
-                              }
+                            forGroundColor: AppColors.primary,
+                            isLoading: loginProvider.guestLoading,
+                            color: AppColors.lightGrey2,
+                            isOutlined: true,
+                            onPressed: () async {
+                              FocusScope.of(context).unfocus();
+                              await loginProvider
+                                  .guestLogin(); // Call Guest API first
+
+                              Navigator.pushReplacement(
+                                navigatorKey.currentContext!,
+                                MaterialPageRoute(
+                                  builder: (_) => NavigationTabScreen(),
+                                ),
+                              );
                             },
                           ),
-                        ),
-
-                        // Show digit counter
-                        if (_phoneController.text.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            // child: Text(
-                            //   "${_phoneController.text.length}/$_maxPhoneLength",
-                            //   style: AppFontStyle.text_12_400(
-                            //     _phoneController.text.length == _maxPhoneLength
-                            //         ? Colors.green
-                            //         : AppColors.grey,
-                            //   ),
-                            // ),
-                          ),
-                      ],
-                    ),
-                  ),
-
-                  hBox(8),
-
-                  // Helper text showing expected format
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      "Enter exactly $_maxPhoneLength digits for ${loginProvider.getCountryName(_selectedCountry?.phoneCode ?? '91')}",
-                      style: AppFontStyle.text_12_400(
-                        AppColors.grey,
-                        fontFamily: AppFontFamily.regular,
+                        ],
                       ),
                     ),
                   ),
-
-                  hBox(16),
-
-                  CustomButton(
-                    text: "Continue",
-                    isLoading: loginProvider.isLoading,
-                    onPressed: _handleContinue,
-                  ),
-
-                  hBox(14),
-
-                  CustomButton(
-                    text: "Skip",
-                    textStyle: AppFontStyle.text_14_600(
-                      AppColors.black,
-                      fontFamily: AppFontFamily.semiBold,
-                    ),
-                    forGroundColor: AppColors.primary,
-                    isLoading: loginProvider.guestLoading,
-                    color: AppColors.lightGrey2,
-                    isOutlined: true,
-                    onPressed: () async {
-                      FocusScope.of(context).unfocus();
-                      await loginProvider.guestLogin(); // Call Guest API first
-
-                      Navigator.pushReplacement(
-                        navigatorKey.currentContext!,
-                        MaterialPageRoute(
-                          builder: (_) => NavigationTabScreen(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  hBox(35),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          color: AppColors.lightGrey2.withValues(alpha: 0.5),
-                          thickness: 1,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          "Or continue with",
-                          style: AppFontStyle.text_14_400(
-                            AppColors.grey,
-                            fontFamily: AppFontFamily.regular,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          color: AppColors.lightGrey2.withValues(alpha: 0.5),
-                          thickness: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  hBox(35),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _socialButton(
-                        imagePath: "assets/images/Google.png",
-                        onTap: () {
-                          if (kDebugMode) {
-                            print("click on google");
-                          }
-                          loginProvider.signInWithGoogle(context);
-                        },
-                      ),
-                      wBox(20),
-                      _socialButton(
-                        imagePath: "assets/images/gg--facebook 1.png",
-                        onTap: () {
-                          // Handle Facebook login
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           );
         },

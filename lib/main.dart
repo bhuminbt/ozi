@@ -78,7 +78,7 @@ Future<void> _initServicesInBackground() async {
       await GoogleSignIn.instance.initialize(
         clientId:
             '102047141140-1shi7k7q400fr90snrpalk9a21foq3fj.apps.googleusercontent.com',
-        serverClientId:
+        serverClientId: //
             '102047141140-maig6m3qtbl17h9h8d39r14tr1d7qgb4.apps.googleusercontent.com',
       );
       debugPrint('Google Sign-In initialized successfully');

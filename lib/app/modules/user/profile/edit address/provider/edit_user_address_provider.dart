@@ -649,7 +649,7 @@ class EditUserAddressProvider extends ChangeNotifier {
   }
 
   static const Map<String, Map<String, dynamic>> countryPhoneConfig = {
-    '1': {'length': 10, 'name': 'USA/Canada'}, // USA, Canada
+    '1': {'length': 10, 'name': 'USA'}, // USA, Canada
     '7': {'length': 10, 'name': 'Russia'}, // Russia
     '20': {'length': 10, 'name': 'Egypt'}, // Egypt
     '27': {'length': 9, 'name': 'South Africa'}, // South Africa

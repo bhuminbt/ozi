@@ -34,7 +34,7 @@ class LoginProvider extends ChangeNotifier {
   LoginModel? get loginResponse => _loginResponse;
 
   static const Map<String, Map<String, dynamic>> countryPhoneConfig = {
-    '1': {'length': 10, 'name': 'USA/Canada'}, // USA, Canada
+    '1': {'length': 10, 'name': 'USA'}, // USA, Canada
     '7': {'length': 10, 'name': 'Russia'}, // Russia
     '20': {'length': 10, 'name': 'Egypt'}, // Egypt
     '27': {'length': 9, 'name': 'South Africa'}, // South Africa
@@ -992,7 +992,8 @@ class LoginProvider extends ChangeNotifier {
               ? user['step_completed']
               : int.tryParse(user['step_completed']?.toString() ?? '0') ?? 0;
 
-          final bool isRoleSelected = (user['is_role_selected'] == true ||
+          final bool isRoleSelected =
+              (user['is_role_selected'] == true ||
                   user['is_role_selected'] == 1 ||
                   user['is_role_selected'] == '1') ||
               (userRole != null && userRole.isNotEmpty);
