@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ozi</string>
+    <string name="ozi">ozi</string>
+    <string name="facebook_app_id">4597675573847829</string>
+    <string name="fb_login_protocol_scheme">fb4597675573847829</string>
+    <string name="facebook_client_token">ce0f9aaa29a069000e23f5272347b607</string>
+</resources>

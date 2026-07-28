@@ -663,6 +663,26 @@ class Repository {
     }
   }
 
+  Future<dynamic> checkFacebookSocialUserApi(String fbId, String email) async {
+    try {
+      final url = AppUrls.checkFbSocialUser;
+
+      dev.log('Check Facebook Social User API URL: $url');
+
+      dynamic response = await _apiService.postApi({
+        "facebook_id": fbId,
+        "email": email,
+      }, url);
+
+      dev.log('Check Facebook Social User Raw Response: $response');
+
+      return response;
+    } catch (e) {
+      dev.log('Error in checkSocialUser: $e');
+      throw Exception(e);
+    }
+  }
+
   // ********************************************* GetProfile Api ***********************************************//
   Future<dynamic> getProfileApi() async {
     try {
@@ -711,6 +731,14 @@ class Repository {
     dynamic response = await _apiService.postApiWithoutToken(
       data,
       AppUrls.socialLogin,
+    );
+    return response;
+  }
+
+  Future<dynamic> facebookSocialLoginApi(Map<String, dynamic> data) async {
+    dynamic response = await _apiService.postApiWithoutToken(
+      data,
+      AppUrls.socialLoginFacebookApi,
     );
     return response;
   }
@@ -1082,14 +1110,10 @@ class Repository {
       dev.log("Withdraw response: $response");
 
       return response;
-
     } catch (e) {
       dev.log("Error in withDrawMoney: $e");
 
-      return {
-        "status": false,
-        "message": "Something went wrong"
-      };
+      return {"status": false, "message": "Something went wrong"};
     }
   }
 
@@ -1203,15 +1227,12 @@ class Repository {
     }
   }
 
-  Future<VendorReviewModel> fetchReviewScreen()
-  async
-  {
-    try{
+  Future<VendorReviewModel> fetchReviewScreen() async {
+    try {
       final response = await _apiService.getApi(AppUrls.vendorReviewScreen);
 
       return VendorReviewModel.fromJson(response);
-    }
-    catch(e) {
+    } catch (e) {
       dev.log("Error in fetchReviewScreen: $e");
       throw Exception(e);
     }
@@ -1220,12 +1241,9 @@ class Repository {
   Future<Uint8List> downloadInvoice(String bookingId) async {
     try {
       // Step 1: Get URL
-      final response = await _apiService.postApi(
-        {
-          "booking_id": int.parse(bookingId),
-        },
-        AppUrls.pdfInvoiceUrl,
-      );
+      final response = await _apiService.postApi({
+        "booking_id": int.parse(bookingId),
+      }, AppUrls.pdfInvoiceUrl);
 
       if (response["status"] != true) {
         throw Exception("Failed to get invoice URL");

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:ozi/app/core/appExports/app_export.dart';
@@ -695,6 +696,423 @@ class LoginProvider extends ChangeNotifier {
           lastName,
           email,
         );
+      }
+      updateSocialLoading(false);
+    } catch (e) {
+      updateSocialLoading(false);
+      CustomOverlayLoader.hide();
+      print("error in checkSocialUserApi: $e");
+      showAccountDeletedAdminPopup(e.toString(), context);
+      // socialLoginApi(
+      //   context,
+      //   idToken,
+      //   googleId,
+      //   utcTime,
+      //   firstName,
+      //   lastName,
+      //   email,
+      // );
+      debugPrint('Error in checkSocialUserApi: $e');
+    }
+  }
+
+  // Future<void> socialLoginFacebookApi(BuildContext context) async {
+  //   FocusManager.instance.primaryFocus?.unfocus();
+  //   updateLoading(true);
+
+  //   try {
+  //     /// Facebook Login Popup
+  //     final LoginResult result = await FacebookAuth.instance.login(
+  //       permissions: ['email', 'public_profile'],
+  //     );
+
+  //     switch (result.status) {
+  //       case LoginStatus.success:
+  //         break;
+
+  //       case LoginStatus.cancelled:
+  //         Get.showToast("Facebook login cancelled", type: ToastType.error);
+  //         return;
+
+  //       case LoginStatus.failed:
+  //         Get.showToast(
+  //           result.message ?? "Facebook login failed",
+  //           type: ToastType.error,
+  //         );
+  //         return;
+
+  //       case LoginStatus.operationInProgress:
+  //         Get.showToast(
+  //           "Facebook login already in progress",
+  //           type: ToastType.error,
+  //         );
+  //         return;
+  //     }
+
+  //     /// Get Facebook User Data
+  //     final userData = await FacebookAuth.instance.getUserData(
+  //       fields: "id,first_name,last_name,name,email,picture.width(200)",
+  //     );
+
+  //     debugPrint("Facebook User Data => $userData");
+
+  //     final String fbId = userData['id']?.toString() ?? '';
+  //     final String firstName = userData['first_name']?.toString() ?? '';
+  //     final String lastName = userData['last_name']?.toString() ?? '';
+  //     final String email = userData['email']?.toString() ?? '';
+
+  //     /// Device Info
+  //     String deviceName = await DeviceIdService.getDeviceName();
+
+  //     String finalDeviceId = await DeviceIdService.getFinalUniqueId();
+
+  //     /// API Call
+  //     final value = await _repository.facebookSocialLoginApi({
+  //       "facebook_id": fbId,
+  //       "first_name": firstName,
+  //       "last_name": lastName,
+  //       "email": email,
+  //       "device_name": deviceName,
+  //       "device_type": Platform.isAndroid ? "android" : "ios",
+  //       "device_id": finalDeviceId,
+  //       "fcm_token": await PushNotificationService.getToken() ?? "",
+  //     });
+
+  //     if (!context.mounted) return;
+
+  //     if (value['status'] == true) {
+  //       final data = value['data'] ?? {};
+  //       final user = data['user'] ?? {};
+
+  //       final String apiToken = data['api_token']?.toString() ?? '';
+
+  //       final String userId = user['id']?.toString() ?? '';
+
+  //       final String? userRole = user['user_role']?.toString();
+
+  //       final int stepCompleted = (user['step_completed'] is int)
+  //           ? user['step_completed']
+  //           : int.tryParse(user['step_completed']?.toString() ?? '0') ?? 0;
+
+  //       final bool isRoleSelected =
+  //           (user['is_role_selected'] == true ||
+  //               user['is_role_selected'] == 1 ||
+  //               user['is_role_selected'] == '1') ||
+  //           (userRole != null && userRole.isNotEmpty);
+
+  //       final bool isMobileVerified = user['is_mobile_verified'] ?? false;
+
+  //       /// Save User Data
+  //       await UserPreference.saveAccessToken(apiToken);
+  //       await UserPreference.saveUserId(userId);
+
+  //       if (userRole != null) {
+  //         await UserPreference.saveRole(userRole);
+  //       }
+
+  //       await UserPreference.saveIsLoggedIn(true);
+  //       await UserPreference.saveIsRoleSelected(isRoleSelected);
+  //       await UserPreference.saveStep(stepCompleted.toString());
+
+  //       await UserPreference.saveFirstName(
+  //         user['first_name']?.toString() ?? '',
+  //       );
+
+  //       await UserPreference.saveLastName(user['last_name']?.toString() ?? '');
+
+  //       await UserPreference.saveEmail(user['email']?.toString() ?? '');
+
+  //       await UserPreference.saveMobile(user['mobile']?.toString() ?? '');
+
+  //       await UserPreference.saveIsMobileVerified(isMobileVerified);
+
+  //       /// Navigation Logic
+  //       if (navigatorKey.currentContext?.mounted ?? false) {
+  //         if (stepCompleted == 0 || userRole == null) {
+  //           Navigator.pushReplacement(
+  //             navigatorKey.currentContext!,
+  //             MaterialPageRoute(
+  //               builder: (_) => ChooseRoleScreen(
+  //                 userId: userId,
+  //                 firstName: user['first_name']?.toString(),
+  //                 lastName: user['last_name']?.toString(),
+  //                 email: user['email']?.toString(),
+  //                 phoneNumber: user['mobile']?.toString(),
+  //                 isMobileVerified: isMobileVerified,
+  //               ),
+  //             ),
+  //           );
+  //         } else if (stepCompleted == 1 && userRole == 'vendor') {
+  //           await saveLogin(userRole, apiToken, userId);
+
+  //           Navigator.pushReplacement(
+  //             navigatorKey.currentContext!,
+  //             MaterialPageRoute(builder: (_) => ServiceCategory()),
+  //           );
+  //         } else if (stepCompleted == 2 && userRole == 'vendor') {
+  //           await saveLogin(userRole, apiToken, userId);
+
+  //           Navigator.pushReplacement(
+  //             navigatorKey.currentContext!,
+  //             MaterialPageRoute(builder: (_) => SetAvailabilityScreen(false)),
+  //           );
+  //         } else if (stepCompleted == 3 && userRole == 'vendor') {
+  //           await saveLogin(userRole, apiToken, userId);
+
+  //           Navigator.pushReplacement(
+  //             navigatorKey.currentContext!,
+  //             MaterialPageRoute(
+  //               builder: (_) =>
+  //                   IdentityVerificationScreen(isFromProfile: false),
+  //             ),
+  //           );
+  //         } else {
+  //           await saveLogin(userRole ?? '', apiToken, userId);
+
+  //           loginWithSaveTokenRedirection(userRole, apiToken, userId);
+  //         }
+  //       }
+
+  //       Get.showToast(
+  //         value['message']?.toString() ?? 'Login Successfully',
+  //         type: ToastType.success,
+  //       );
+  //     } else {
+  //       Get.showToast(
+  //         value['message']?.toString() ?? 'Failed to login',
+  //         type: ToastType.error,
+  //       );
+  //     }
+  //   } catch (error, stackTrace) {
+  //     debugPrint("Facebook Login Error => $error");
+
+  //     debugPrintStack(stackTrace: stackTrace);
+
+  //     if (context.mounted) {
+  //       if (error.toString() == 'Invalid credentials.') {
+  //         setloginErrorInvalidCredentialsMessage(error.toString());
+  //       } else if (error.toString() == 'Email not found.') {
+  //         setEmailNotFoundMessage(error.toString());
+  //       } else {
+  //         Get.showToast(error.toString(), type: ToastType.error);
+  //       }
+  //     }
+  //   } finally {
+  //     updateLoading(false);
+  //   }
+  // }
+  Future<void> socialLoginFacebookApi(BuildContext context) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    updateLoading(true);
+
+    try {
+      // Clear previous session
+      await FacebookAuth.instance.logOut();
+
+      final LoginResult result = await FacebookAuth.instance.login(
+        permissions: const ['email', 'public_profile'],
+      );
+
+      debugPrint("FB Status => ${result.status}");
+      debugPrint("FB Message => ${result.message}");
+
+      if (result.status != LoginStatus.success) {
+        if (result.status == LoginStatus.cancelled) {
+          Get.showToast("Facebook login cancelled", type: ToastType.error);
+        } else {
+          Get.showToast(
+            result.message ?? "Facebook login failed",
+            type: ToastType.error,
+          );
+        }
+        return;
+      }
+
+      final userData = await FacebookAuth.instance.getUserData(
+        fields: "id,first_name,last_name,name,email,picture.width(200)",
+      );
+
+      debugPrint("FACEBOOK USER DATA => $userData");
+
+      final token = await FacebookAuth.instance.accessToken;
+
+      // debugPrint("Facebook Token Permissions => ${token?.permissions}");
+      // debugPrint("Facebook Token Declined => ${token?.declinedPermissions}");
+
+      final String fbId = userData['id']?.toString() ?? '';
+
+      String firstName = userData['first_name']?.toString() ?? '';
+
+      String lastName = userData['last_name']?.toString() ?? '';
+
+      if (firstName.isEmpty && userData['name'] != null) {
+        final parts = userData['name'].toString().split(' ');
+        firstName = parts.isNotEmpty ? parts.first : '';
+        lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
+      }
+
+      // String email = userData['email']?.toString().trim() ?? '';
+
+      // if (email.isEmpty) {
+      //   // Fallback email since some Facebook accounts (e.g., registered via phone number) do not return an email
+      //   email = '$fbId@facebook.com';
+      // }
+
+      final String deviceName = await DeviceIdService.getDeviceName();
+
+      final String finalDeviceId = await DeviceIdService.getFinalUniqueId();
+
+      final value = await _repository.facebookSocialLoginApi({
+        "facebook_id": fbId,
+        "first_name": firstName,
+        "last_name": lastName,
+        "email": '',
+        "device_name": deviceName,
+        "device_type": Platform.isAndroid ? "android" : "ios",
+        "device_id": finalDeviceId,
+        "fcm_token": await PushNotificationService.getToken() ?? "",
+      });
+
+      if (!context.mounted) return;
+
+      if (value['status'] != true) {
+        Get.showToast(
+          value['message']?.toString() ?? 'Failed to login',
+          type: ToastType.error,
+        );
+        return;
+      }
+
+      final data = value['data'] ?? {};
+      final user = data['user'] ?? {};
+
+      final String apiToken = data['api_token']?.toString() ?? '';
+
+      final String userId = user['id']?.toString() ?? '';
+
+      final String? userRole = user['user_role']?.toString();
+
+      final int stepCompleted =
+          int.tryParse(user['step_completed']?.toString() ?? '0') ?? 0;
+
+      final bool isRoleSelected =
+          (user['is_role_selected'] == true ||
+              user['is_role_selected'] == 1 ||
+              user['is_role_selected'] == '1') ||
+          (userRole != null && userRole.isNotEmpty);
+
+      final bool isMobileVerified =
+          user['is_mobile_verified'] == true ||
+          user['is_mobile_verified'] == 1 ||
+          user['is_mobile_verified'] == '1';
+
+      await UserPreference.saveAccessToken(apiToken);
+      await UserPreference.saveUserId(userId);
+
+      if (userRole != null) {
+        await UserPreference.saveRole(userRole);
+      }
+
+      await UserPreference.saveIsLoggedIn(true);
+      await UserPreference.saveIsRoleSelected(isRoleSelected);
+      await UserPreference.saveStep(stepCompleted.toString());
+
+      await UserPreference.saveFirstName(user['first_name']?.toString() ?? '');
+
+      await UserPreference.saveLastName(user['last_name']?.toString() ?? '');
+
+      if (stepCompleted == 0 || userRole == null || userRole.isEmpty) {
+        Navigator.pushReplacement(
+          navigatorKey.currentContext!,
+          MaterialPageRoute(
+            builder: (_) => ChooseRoleScreen(
+              userId: userId,
+              firstName: user['first_name']?.toString(),
+              lastName: user['last_name']?.toString(),
+              email: user['email']?.toString(),
+              phoneNumber: user['mobile']?.toString(),
+              isMobileVerified: isMobileVerified,
+            ),
+          ),
+        );
+      } else if (stepCompleted == 1 && userRole == 'vendor') {
+        await saveLogin(userRole, apiToken, userId);
+
+        Navigator.pushReplacement(
+          navigatorKey.currentContext!,
+          MaterialPageRoute(builder: (_) => ServiceCategory()),
+        );
+      } else if (stepCompleted == 2 && userRole == 'vendor') {
+        await saveLogin(userRole, apiToken, userId);
+
+        Navigator.pushReplacement(
+          navigatorKey.currentContext!,
+          MaterialPageRoute(builder: (_) => SetAvailabilityScreen(false)),
+        );
+      } else if (stepCompleted == 3 && userRole == 'vendor') {
+        await saveLogin(userRole, apiToken, userId);
+
+        Navigator.pushReplacement(
+          navigatorKey.currentContext!,
+          MaterialPageRoute(
+            builder: (_) => IdentityVerificationScreen(isFromProfile: false),
+          ),
+        );
+      } else {
+        await saveLogin(userRole ?? '', apiToken, userId);
+
+        loginWithSaveTokenRedirection(userRole, apiToken, userId);
+      }
+
+      Get.showToast(
+        value['message']?.toString() ?? 'Login Successfully',
+        type: ToastType.success,
+      );
+    } catch (e, st) {
+      debugPrint("Facebook Login Error => $e");
+      debugPrintStack(stackTrace: st);
+
+      if (context.mounted) {
+        Get.showToast(e.toString(), type: ToastType.error);
+      }
+    } finally {
+      updateLoading(false);
+    }
+  }
+
+  Future<void> checkFacebookSocialUserApi(
+    BuildContext context,
+    String fbId,
+    String email,
+    String idToken,
+    String utcTime,
+    String firstName,
+    String lastName,
+  ) async {
+    try {
+      updateSocialLoading(true);
+      print("account is deleted. checking user");
+      final value = await _repository.checkFacebookSocialUserApi(fbId, email);
+
+      final bool isDeleted = value['data'] != null
+          ? value['data']['is_deleted'] == true
+          : false;
+      print("account is deleted. checking user $isDeleted");
+
+      if (isDeleted) {
+        print("account is deleted");
+        showAccountCheckerPopup(
+          context,
+          fbId,
+          email,
+          idToken,
+          utcTime,
+          firstName,
+          lastName,
+        );
+      } else {
+        print("account is not deleted");
+        socialLoginFacebookApi(context);
       }
       updateSocialLoading(false);
     } catch (e) {

@@ -253,8 +253,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                               ),
                         borderRadius: 60,
                         validator: (val) {
-                          final text = (val == null || val.isEmpty) 
-                              ? value.emailController.text 
+                          final text = (val == null || val.isEmpty)
+                              ? value.emailController.text
                               : val;
 
                           if (text.trim().isEmpty) {
@@ -293,43 +293,32 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                 left: 14,
                                 right: 8,
                               ),
-                              child: InkWell(
-                                onTap:
-                                    (value.isloading || value.isMobileVerified)
-                                    ? null
-                                    : () {
-                                        showCountryPicker(
-                                          context: context,
-                                          showPhoneCode: true,
-                                          onSelect: (Country country) {
-                                            value.updateCountry(country);
-                                            // value.mobileController.clear();
-                                          },
-                                        );
-                                      },
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    // wBox(8),
-                                    Text(
-                                      "+${value.selectedCountry.phoneCode}",
-                                      style: AppFontStyle.text_16_600(
-                                        AppColors.primary,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // wBox(8),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "+1",
+                                        style: AppFontStyle.text_16_600(
+                                          AppColors.primary,
+                                        ),
                                       ),
-                                    ),
-                                    Icon(
-                                      Icons.keyboard_arrow_down,
-                                      size: 16,
-                                      color: AppColors.grey,
-                                    ),
-                                    wBox(8),
-                                    Container(
-                                      height: 20,
-                                      width: 1,
-                                      color: AppColors.grey.withOpacity(0.3),
-                                    ),
-                                  ],
-                                ),
+                                    ],
+                                  ),
+                                  Icon(
+                                    Icons.keyboard_arrow_down,
+                                    size: 16,
+                                    color: AppColors.grey,
+                                  ),
+                                  wBox(8),
+                                  Container(
+                                    height: 20,
+                                    width: 1,
+                                    color: AppColors.grey.withOpacity(0.3),
+                                  ),
+                                ],
                               ),
                             ),
                             onChanged: (val) {

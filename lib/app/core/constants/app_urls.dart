@@ -1,7 +1,10 @@
 class AppUrls {
-  static const String baseUrl = "https://nbturls.in/oziservice/api";
-  static const String imageBaseUrl = "https://nbturls.in/oziservice/public/";
-  static const String baseUrlSocket = "http://3.109.130.74:8001/";
+  //   static const String baseUrl = "https://ozi.services/api";
+  //   static const String imageBaseUrl = "https://ozi.services/public/";
+  static const String baseUrl = "https://nbttest.com/oziservice/api";
+  static const String imageBaseUrl = "https://nbttest.com/oziservice/public/";
+
+  static const String baseUrlSocket = "https://chat.ozi.services/";
   //     static const String baseUrlSocket =
   //         "https://bn6b6jd8-8001.inc1.devtunnels.ms/";
   static const String guestUser = "$baseUrl/guest-login";
@@ -10,6 +13,7 @@ class AppUrls {
       "AIzaSyC0gWdd-oEdqXA6u384T8lQdjUJXtnZNQI";
   static const String login = "$baseUrl/send-otp";
   static const String socialLogin = "$baseUrl/social-login";
+  static const String socialLoginFacebookApi = "$baseUrl/facebook-login";
   static const String verification = "$baseUrl/verify-otp";
   static const String documentStatusCheck =
       "$baseUrl/get-vendorDoc-verified-status";
@@ -65,6 +69,7 @@ class AppUrls {
   static const String fetchLatLong = "$baseUrl/get-vendor-location";
   static const String checkMobileExists = "$baseUrl/check-mobile-exists";
   static const String checkSocialUser = "$baseUrl/check-social-user";
+  static const String checkFbSocialUser = "$baseUrl/check-facebook-user";
   static const String admindltApi = "$baseUrl/account-restore-request";
   // Vendor APIs
   static const String getAllCategories = "$baseUrl/get-all-categories";

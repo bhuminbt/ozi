@@ -68,6 +68,7 @@ dependencies:
   google_places_flutter: ^2.1.1
   syncfusion_flutter_pdfviewer: ^33.1.46
   open_filex: ^4.7.0
+  flutter_facebook_auth: ^7.2.0
 
 dependency_overrides:
   google_maps_flutter_android: 2.14.0

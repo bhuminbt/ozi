@@ -364,8 +364,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               wBox(20),
                               _socialButton(
                                 imagePath: "assets/images/gg--facebook 1.png",
-                                onTap: () {
+                                onTap: () async {
                                   // Handle Facebook login
+
+                                  await loginProvider.socialLoginFacebookApi(
+                                    context,
+                                  );
                                 },
                               ),
                             ],

@@ -496,10 +496,6 @@ class HomeScreenView extends StatelessWidget {
             fit: BoxFit.cover,
             alignment: Alignment.center,
           ),
-          // child: Text(
-          //   "No Services Available At Your Location",
-          //   style: AppFontStyle.text_16_500(AppColors.grey),
-          // ),
         ),
       );
     }
@@ -598,6 +594,7 @@ class HomeScreenView extends StatelessWidget {
               color: AppColors.primary,
               borderRadius: BorderRadius.circular(16),
             ),
+
             child: Row(
               children: [
                 Expanded(
