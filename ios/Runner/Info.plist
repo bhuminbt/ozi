@@ -41,9 +41,21 @@
 					<string>com.googleusercontent.apps.102047141140-mqg6j1te5gbpk1h495dk2rbnmsni54us</string>
 				</array>
 			</dict>
+			<dict>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>fb4597675573847829</string>
+				</array>
+			</dict>
 		</array>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>FacebookAppID</key>
+		<string>4597675573847829</string>
+		<key>FacebookClientToken</key>
+		<string>ce0f9aaa29a069000e23f5272347b607</string>
+		<key>FacebookDisplayName</key>
+		<string>Ozi</string>
 		<key>FirebaseAppDelegateProxyEnabled</key>
 		<true/>
 		<key>GIDClientID</key>
@@ -57,6 +69,10 @@
 			<string>mailto</string>
 			<string>comgooglemaps</string>
 			<string>googlechromes</string>
+			<string>fbapi</string>
+			<string>fb-messenger-share-api</string>
+			<string>fbauth2</string>
+			<string>fbshareextension</string>
 		</array>
 		<key>LSRequiresIPhoneOS</key>
 		<true/>

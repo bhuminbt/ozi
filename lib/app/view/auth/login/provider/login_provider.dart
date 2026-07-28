@@ -904,8 +904,13 @@ class LoginProvider extends ChangeNotifier {
   Future<void> socialLoginFacebookApi(BuildContext context) async {
     FocusManager.instance.primaryFocus?.unfocus();
     updateLoading(true);
+    updateSocialLoading(true);
 
     try {
+      if (context.mounted) {
+        CustomOverlayLoader.show(context);
+      }
+
       // Clear previous session
       await FacebookAuth.instance.logOut();
 
@@ -917,6 +922,7 @@ class LoginProvider extends ChangeNotifier {
       debugPrint("FB Message => ${result.message}");
 
       if (result.status != LoginStatus.success) {
+        CustomOverlayLoader.hide();
         if (result.status == LoginStatus.cancelled) {
           Get.showToast("Facebook login cancelled", type: ToastType.error);
         } else {
@@ -928,21 +934,24 @@ class LoginProvider extends ChangeNotifier {
         return;
       }
 
+      if (context.mounted) {
+        CustomOverlayLoader.show(context);
+      }
+
       final userData = await FacebookAuth.instance.getUserData(
         fields: "id,first_name,last_name,name,email,picture.width(200)",
       );
 
       debugPrint("FACEBOOK USER DATA => $userData");
 
-      final token = await FacebookAuth.instance.accessToken;
-
-      // debugPrint("Facebook Token Permissions => ${token?.permissions}");
-      // debugPrint("Facebook Token Declined => ${token?.declinedPermissions}");
-
       final String fbId = userData['id']?.toString() ?? '';
+      if (fbId.isEmpty) {
+        CustomOverlayLoader.hide();
+        Get.showToast("Failed to fetch Facebook user information", type: ToastType.error);
+        return;
+      }
 
       String firstName = userData['first_name']?.toString() ?? '';
-
       String lastName = userData['last_name']?.toString() ?? '';
 
       if (firstName.isEmpty && userData['name'] != null) {
@@ -951,29 +960,26 @@ class LoginProvider extends ChangeNotifier {
         lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
       }
 
-      // String email = userData['email']?.toString().trim() ?? '';
-
-      // if (email.isEmpty) {
-      //   // Fallback email since some Facebook accounts (e.g., registered via phone number) do not return an email
-      //   email = '$fbId@facebook.com';
-      // }
+      String email = userData['email']?.toString().trim() ?? '';
+      if (email.isEmpty) {
+        email = '$fbId@facebook.com';
+      }
 
       final String deviceName = await DeviceIdService.getDeviceName();
-
       final String finalDeviceId = await DeviceIdService.getFinalUniqueId();
 
       final value = await _repository.facebookSocialLoginApi({
         "facebook_id": fbId,
         "first_name": firstName,
         "last_name": lastName,
-        "email": '',
+        "email": email,
         "device_name": deviceName,
         "device_type": Platform.isAndroid ? "android" : "ios",
         "device_id": finalDeviceId,
         "fcm_token": await PushNotificationService.getToken() ?? "",
       });
 
-      if (!context.mounted) return;
+      CustomOverlayLoader.hide();
 
       if (value['status'] != true) {
         Get.showToast(
@@ -987,9 +993,7 @@ class LoginProvider extends ChangeNotifier {
       final user = data['user'] ?? {};
 
       final String apiToken = data['api_token']?.toString() ?? '';
-
       final String userId = user['id']?.toString() ?? '';
-
       final String? userRole = user['user_role']?.toString();
 
       final int stepCompleted =
@@ -1018,12 +1022,14 @@ class LoginProvider extends ChangeNotifier {
       await UserPreference.saveStep(stepCompleted.toString());
 
       await UserPreference.saveFirstName(user['first_name']?.toString() ?? '');
-
       await UserPreference.saveLastName(user['last_name']?.toString() ?? '');
+      await UserPreference.saveEmail(user['email']?.toString() ?? email);
+
+      final navContext = navigatorKey.currentContext ?? context;
 
       if (stepCompleted == 0 || userRole == null || userRole.isEmpty) {
         Navigator.pushReplacement(
-          navigatorKey.currentContext!,
+          navContext,
           MaterialPageRoute(
             builder: (_) => ChooseRoleScreen(
               userId: userId,
@@ -1039,27 +1045,27 @@ class LoginProvider extends ChangeNotifier {
         await saveLogin(userRole, apiToken, userId);
 
         Navigator.pushReplacement(
-          navigatorKey.currentContext!,
+          navContext,
           MaterialPageRoute(builder: (_) => ServiceCategory()),
         );
       } else if (stepCompleted == 2 && userRole == 'vendor') {
         await saveLogin(userRole, apiToken, userId);
 
         Navigator.pushReplacement(
-          navigatorKey.currentContext!,
+          navContext,
           MaterialPageRoute(builder: (_) => SetAvailabilityScreen(false)),
         );
       } else if (stepCompleted == 3 && userRole == 'vendor') {
         await saveLogin(userRole, apiToken, userId);
 
         Navigator.pushReplacement(
-          navigatorKey.currentContext!,
+          navContext,
           MaterialPageRoute(
             builder: (_) => IdentityVerificationScreen(isFromProfile: false),
           ),
         );
       } else {
-        await saveLogin(userRole ?? '', apiToken, userId);
+        await saveLogin(userRole, apiToken, userId);
 
         loginWithSaveTokenRedirection(userRole, apiToken, userId);
       }
@@ -1069,14 +1075,14 @@ class LoginProvider extends ChangeNotifier {
         type: ToastType.success,
       );
     } catch (e, st) {
+      CustomOverlayLoader.hide();
       debugPrint("Facebook Login Error => $e");
       debugPrintStack(stackTrace: st);
 
-      if (context.mounted) {
-        Get.showToast(e.toString(), type: ToastType.error);
-      }
+      Get.showToast(e.toString(), type: ToastType.error);
     } finally {
       updateLoading(false);
+      updateSocialLoading(false);
     }
   }
 
